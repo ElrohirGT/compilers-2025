@@ -2,40 +2,93 @@ from SimpleLangParser import SimpleLangParser
 from SimpleLangVisitor import SimpleLangVisitor
 from custom_types import IntType, FloatType, StringType, BoolType
 
+
 class TypeCheckVisitor(SimpleLangVisitor):
 
-  def visitMulDiv(self, ctx: SimpleLangParser.MulDivContext):
-    left_type = self.visit(ctx.expr(0))
-    right_type = self.visit(ctx.expr(1))
-    
-    if isinstance(left_type, (IntType, FloatType)) and isinstance(right_type, (IntType, FloatType)):
-        return FloatType() if isinstance(left_type, FloatType) or isinstance(right_type, FloatType) else IntType()
-    else:
-        raise TypeError("Unsupported operand types for * or /: {} and {}".format(left_type, right_type))
+    def visitMulDiv(self, ctx: SimpleLangParser.MulDivContext):
+        left_type = self.visit(ctx.expr(0))
+        right_type = self.visit(ctx.expr(1))
 
-  def visitAddSub(self, ctx: SimpleLangParser.AddSubContext):
-    left_type = self.visit(ctx.expr(0))
-    right_type = self.visit(ctx.expr(1))
-    
-    if isinstance(left_type, (IntType, FloatType)) and isinstance(right_type, (IntType, FloatType)):
-        return FloatType() if isinstance(left_type, FloatType) or isinstance(right_type, FloatType) else IntType()
-    else:
-        raise TypeError("Unsupported operand types for + or -: {} and {}".format(left_type, right_type))
-  
-  def visitInt(self, ctx: SimpleLangParser.IntContext):
-    return IntType()
+        if isinstance(left_type, (IntType, FloatType)) and isinstance(
+            right_type, (IntType, FloatType)
+        ):
+            return (
+                FloatType()
+                if isinstance(left_type, FloatType) or isinstance(right_type, FloatType)
+                else IntType()
+            )
+        else:
+            print(ctx.toStringTree())
+            raise TypeError(
+                "Unsupported operand types for * or /: {} and {}".format(
+                    left_type, right_type
+                )
+            )
 
-  def visitFloat(self, ctx: SimpleLangParser.FloatContext):
-    return FloatType()
+    def visitAddSub(self, ctx: SimpleLangParser.AddSubContext):
+        left_type = self.visit(ctx.expr(0))
+        right_type = self.visit(ctx.expr(1))
 
-  def visitString(self, ctx: SimpleLangParser.StringContext):
-    return StringType()
+        if isinstance(left_type, (IntType, FloatType)) and isinstance(
+            right_type, (IntType, FloatType)
+        ):
+            return (
+                FloatType()
+                if isinstance(left_type, FloatType) or isinstance(right_type, FloatType)
+                else IntType()
+            )
+        else:
+            print(ctx.toStringTree())
+            raise TypeError(
+                "Unsupported operand types for + or -: {} and {}".format(
+                    left_type, right_type
+                )
+            )
 
-  def visitBool(self, ctx: SimpleLangParser.BoolContext):
-    return BoolType()
+    def visitInt(self, ctx: SimpleLangParser.IntContext):
+        return IntType()
 
-  def visitParens(self, ctx: SimpleLangParser.ParensContext):
-    return self.visit(ctx.expr())
+    def visitFloat(self, ctx: SimpleLangParser.FloatContext):
+        return FloatType()
 
-    def visitNumExpres(self, ctx: SimpleLangParser.NumExprContext):
-        return self.visit(ctx.numExpr())
+    def visitString(self, ctx: SimpleLangParser.StringContext):
+        return StringType()
+
+    def visitBool(self, ctx: SimpleLangParser.BoolContext):
+        return BoolType()
+
+    def visitParens(self, ctx: SimpleLangParser.ParensContext):
+        return self.visit(ctx.expr())
+
+    def visitExpon(self, ctx: SimpleLangParser.ExponContext):
+        left_type = self.visit(ctx.expr(0))
+        right_type = self.visit(ctx.expr(1))
+
+        if not isinstance(left_type, (IntType, FloatType)) or not isinstance(
+            right_type, (IntType, FloatType)
+        ):
+            print(ctx.toStringTree())
+            raise TypeError(
+                "Unsupported operand types for ** {} and {}".format(
+                    left_type, right_type
+                )
+            )
+
+        if isinstance(left_type, IntType) and isinstance(right_type, IntType):
+            return IntType()
+        elif isinstance(left_type, FloatType) or isinstance(right_type, FloatType):
+            return FloatType()
+
+    def visitConcat(self, ctx: SimpleLangParser.ConcatContext):
+        left_type = self.visit(ctx.expr(0))
+        right_type = self.visit(ctx.expr(1))
+
+        if isinstance(left_type, StringType) and isinstance(right_type, StringType):
+            return StringType()
+        else:
+            print(ctx.toStringTree())
+            raise TypeError(
+                "Unsupported operand types for ++: {} and {}".format(
+                    left_type, right_type
+                )
+            )
