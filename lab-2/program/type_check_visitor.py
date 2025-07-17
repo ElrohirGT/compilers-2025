@@ -36,3 +36,6 @@ class TypeCheckVisitor(SimpleLangVisitor):
 
   def visitParens(self, ctx: SimpleLangParser.ParensContext):
     return self.visit(ctx.expr())
+
+    def visitNumExpres(self, ctx: SimpleLangParser.NumExprContext):
+        return self.visit(ctx.numExpr())

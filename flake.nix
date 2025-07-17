@@ -23,7 +23,7 @@
       python = pkgs.python3.withPackages (p: [p.antlr4-python3-runtime]);
     in {
       default = pkgs.mkShell {
-        packages = [pkgs.antlr4 python pkgs.entr];
+        packages = [pkgs.antlr4 python pkgs.entr pkgs.black];
       };
     });
   };
